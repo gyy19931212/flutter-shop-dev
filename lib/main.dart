@@ -1,34 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/demo/TimerPage.dart';
-import 'package:flutter_app/demo/RoutePage.dart';
+import './config/colors/MyColors.dart';
+import './pages/Index.dart';
+import 'package:provide/provide.dart';
+import 'provide/IndexProvider.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  //初始化具体的peovider
+  IndexProvide indexProvide = IndexProvide();
+
+  //初始化Providers
+  Providers provides = new Providers();
+  provides
+    ..provide(Provider<IndexProvide>.value(indexProvide));
+
+  runApp(ProviderNode(child: MyApp(), providers: provides));
+}
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primaryColor: MyColors.colorTheme
       ),
-      home: RoutePage(),
-      routes: {
-//        "firstRoute": (context)=> FirstRoutePage("dd")
-      },
-      //路由守卫
-      onGenerateRoute: (RouteSettings settings){
-        var name = settings.name;
-        switch(name) {
-          case "firstRoute" :
-            print("onGenerateRoute " + name);
-            return MaterialPageRoute(builder: (context) {
-                return FirstRoutePage("dd");
-            });
-            break;
-        }
-      },
+      home: IndexPage(),
+
     );
   }
 }

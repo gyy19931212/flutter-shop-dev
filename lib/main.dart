@@ -3,6 +3,7 @@ import './config/colors/MyColors.dart';
 import './pages/Index.dart';
 import 'package:provide/provide.dart';
 import 'provide/IndexProvider.dart';
+import 'demo/demo.dart';
 
 void main() {
   //初始化具体的peovider
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
         primaryColor: MyColors.colorTheme
       ),
       home: IndexPage(),
-
+//      home: DemoWidget(),
     );
   }
 }

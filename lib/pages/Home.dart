@@ -5,6 +5,7 @@ import '../config/colors/MyColors.dart';
 import '../api/service_method.dart';
 import 'dart:convert';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 ///描述：
 ///author：gyy
@@ -65,8 +66,9 @@ class HomePage extends StatelessWidget {
                 children: <Widget>[
                   _buildSwipe(context, swiperDataList), //轮播图
                   _buildGrid(context, navigatorList), //grid布局
-                  _buildAdvers(context, advertesPicture), //广告图片
-
+                  _buildImage(context, advertesPicture, null), //广告图片
+                  _buildImage(context, leaderImage, leaderPhone), //店长图片
+                  _buildRecommend(context, recommendList), //商品推荐
                 ],
               )),
               loadMore: () {},
@@ -101,19 +103,16 @@ class HomePage extends StatelessWidget {
 
   //grid
   _buildGrid(BuildContext context, List<Map> navigatorList) {
-    if(navigatorList.length > 10) {
+    if (navigatorList.length > 10) {
       navigatorList = navigatorList.sublist(0, 10);
     }
-    var tempIndex=-1;
+    var tempIndex = -1;
     return Container(
-      color: MyColors.colorTheme,
       height: ScreenUtil().setHeight(300),
-
       child: GridView.count(
         physics: NeverScrollableScrollPhysics(),
         crossAxisCount: 5,
         padding: EdgeInsets.all(5),
-
         children: navigatorList.map((item) {
           tempIndex++;
           return _buildGridItem(context, item, tempIndex);
@@ -123,27 +122,107 @@ class HomePage extends StatelessWidget {
   }
 
   //grid item
-  Widget _buildGridItem(BuildContext context,item,index){
+  Widget _buildGridItem(BuildContext context, item, index) {
     // print('------------------${item}');
     return InkWell(
-
-      onTap: (){
+      onTap: () {
 //        _goCategory(context,index,item['mallCategoryId']);
       },
       child: Column(
         children: <Widget>[
-          Image.network(item['image'],width:ScreenUtil().setWidth(95)),
+          Image.network(item['image'], width: ScreenUtil().setWidth(95)),
           Text(item['mallCategoryName'])
         ],
       ),
     );
   }
 
-  //广告图片
-  _buildAdvers(BuildContext context, String imageUrl) {
-    return Container(
-      child: Image.network(imageUrl)
+  //广告图片 GestureTapCallback
+  _buildImage(BuildContext context, String imageUrl, String phone) {
+    return GestureDetector(
+      child: Container(
+        child: Image.network(imageUrl),
+      ),
+      onTap: () async {
+        if (phone.isNotEmpty && await canLaunch("tel:17717572318")) {
+          await launch("tel:17717572318");
+          print('17717572318');
+        }
+      },
     );
   }
 
+  //商品推荐
+  _buildRecommend(BuildContext context, List<Map> recommendList) {
+    return Column(
+      children: <Widget>[
+        SizedBox(height: ScreenUtil().setHeight(10)),
+        Container(
+          padding: EdgeInsets.only(left: 10),
+          height: ScreenUtil().setHeight(60),
+          width: double.infinity,
+          alignment: Alignment.centerLeft,
+          child: Text(
+            '商品推荐',
+            style: TextStyle(
+              color: MyColors.colorRed,
+            ),
+          ),
+        ),
+        Divider(
+          height: 1.0,
+          indent: 0.0,
+          color: MyColors.color999999,
+        ),
+        Container(
+          height: ScreenUtil().setHeight(350),
+          child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: recommendList.length,
+              itemBuilder: (context, index) {
+                return __recommendItem(context, recommendList, index);
+              }),
+        ),
+      ],
+    );
+  }
+
+  //商品推荐 listview的item
+  __recommendItem(BuildContext context, List<Map> recommendList, int index) {
+    return Container(
+        decoration: BoxDecoration(
+            color: MyColors.colorWhite,
+            border: Border(
+                right: Divider.createBorderSide(context,
+                    color: MyColors.color999999, width: 0.5))),
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.all(10),
+              child: Image.network('${recommendList[index]['image']}',
+                  width: ScreenUtil().setHeight(250),
+                  height: ScreenUtil().setHeight(250)),
+            ),
+            Text('${recommendList[index]['mallPrice']}'),
+            SizedBox(height: 5),
+            Text('${recommendList[index]['price']}',
+            style: TextStyle(
+              color: MyColors.color999999,
+              decoration: TextDecoration.lineThrough
+            ),),
+          ],
+        ));
+//    return Container(
+//        Padding(padding: EdgeInsets.all(20)),
+//      child: Column(
+//        children: <Widget>[
+//      child: Image.network('${recommendList[index]['image']}',
+//          width: ScreenUtil().setHeight(300),
+//          height: ScreenUtil().setHeight(300)),),
+//
+//          Text('${recommendList[index]['mallPrice']}'),
+//          Text('${recommendList[index]['price']}'),
+//        ],)
+//      );
+  }
 }
